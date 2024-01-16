@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Person
-from .forms import Create_person
+from .forms import Create_person,Update_person
 # Create your views here.
 
 def index(request):
@@ -37,12 +37,32 @@ def create_person (request):
         if form.is_valid():
             print (form.data)
             form.save()
-            return HttpResponse('Person Created')
+            return redirect('index')
     context = {
         'form':form,
      }
     
-
-    
     return render(request,'Home/create_person.html',context   )
+
+def update_person (request,id):
+    person = Person.objects.get(id=id)
+    form = Update_person(instance=person)
+    if request.method == 'POST':
+        form = Update_person(request.POST,instance=person)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    context = {
+        'form':form,
+     }
+    return render(request,'Home/create_person.html',context )
+
+
+def delete_person (request,id):
+    person = Person.objects.get(id=id)
+    person.delete()
+    return redirect('index')
+
+
+
     
